@@ -16,6 +16,7 @@ local servers = {
     "taplo",
     "texlab",
     "gopls",
+    "clangd",
 }
 local nvlsp = require("nvchad.configs.lspconfig")
 
@@ -68,12 +69,18 @@ lspconfig.cssls.setup({
                 unknownAtRules = "ignore",
             },
         },
-        scss = { validate = true, lint = {
-            unknownAtRules = "ignore",
-        } },
-        less = { validate = true, lint = {
-            unknownAtRules = "ignore",
-        } },
+        scss = {
+            validate = true,
+            lint = {
+                unknownAtRules = "ignore",
+            }
+        },
+        less = {
+            validate = true,
+            lint = {
+                unknownAtRules = "ignore",
+            }
+        },
     },
 })
 
@@ -99,13 +106,6 @@ lspconfig.lua_ls.setup({
             },
         },
     },
-})
-
-lspconfig.clangd.setup({
-    init_options = {
-        clangdFileStatus = true,
-    },
-    capabilities = nvlsp.capabilities,
 })
 
 -- configuring single server, example: typescript
