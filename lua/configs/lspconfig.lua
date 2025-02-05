@@ -14,9 +14,9 @@ local servers = {
     "eslint",
     "htmx",
     "taplo",
-    "texlab",
     "gopls",
     "clangd",
+    "tinymist"
 }
 local nvlsp = require("nvchad.configs.lspconfig")
 
@@ -46,6 +46,7 @@ lspconfig.emmet_ls.setup({
         "pug",
         "typescriptreact",
         "vue",
+        "templ"
     },
     init_options = {
         html = {
