@@ -16,7 +16,8 @@ local servers = {
     "taplo",
     "gopls",
     "clangd",
-    "tinymist"
+    "tinymist",
+    "bazelrc_lsp"
 }
 local nvlsp = require("nvchad.configs.lspconfig")
 

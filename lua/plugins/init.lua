@@ -11,12 +11,17 @@ return {
         config = function()
             require("configs.lspconfig")
         end,
+        dependencies = {
+            "folke/todo-comments.nvim",
+        },
     },
 
     {
         "folke/todo-comments.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
-        opts = {},
+        opts = {
+            lazy = false,
+        },
     },
 
     {
@@ -33,6 +38,14 @@ return {
                     endpoint = "https://api.deepseek.com",
                     model = "deepseek-coder",
                 },
+                copilot_openai = {
+                    __inherited_from = "copilot",
+                    model = "gpt-4o"
+                }
+            },
+            copilot = {
+                model = "claude-3.5-sonnet",
+                -- model = "gpt-4o"
             },
         },
         build = "make",
