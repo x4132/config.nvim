@@ -19,56 +19,52 @@ return {
     {
         "folke/todo-comments.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
+        opts = {},
+    },
+
+    {
+        "j-hui/fidget.nvim",
         opts = {
-            lazy = false,
+            -- options
         },
     },
 
     {
-        "yetone/avante.nvim",
-        event = "VeryLazy",
-        lazy = false,
-        version = false,
+        "olimorris/codecompanion.nvim",
         opts = {
-            provider = "copilot",
-            vendors = {
-                deepseek = {
-                    __inherited_from = "openai",
-                    api_key_name = "DEEPSEEK_API_KEY",
-                    endpoint = "https://api.deepseek.com",
-                    model = "deepseek-coder",
-                },
-                copilot_openai = {
-                    __inherited_from = "copilot",
-                    model = "gpt-4o"
-                }
-            },
-            copilot = {
-                model = "claude-3.5-sonnet",
-                -- model = "gpt-4o"
-            },
-        },
-        build = "make",
-        dependencies = {
-            "stevearc/dressing.nvim",
-            "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
-            --- The below dependencies are optional,
-            "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
-            "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
-            "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-            "zbirenbaum/copilot.lua", -- for providers='copilot'
-            {
-                {
-                    -- Make sure to set this up properly if you have lazy=true
-                    "MeanderingProgrammer/render-markdown.nvim",
-                    opts = {
-                        file_types = { "markdown", "Avante" },
+            strategies = {
+                chat = {
+                    keymaps = {
+                        close = {
+                            modes = {
+                                i = "<cmd>q",
+                                n = "<cmd>q",
+                            },
+                        },
                     },
-                    ft = { "markdown", "Avante" },
+                    tools = {
+                        ["mcp"] = {
+                            callback = function()
+                                return require("mcphub.extensions.codecompanion")
+                            end,
+                            description = "Call tools and resources from the MCP Servers",
+                        },
+                    },
                 },
             },
         },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-treesitter/nvim-treesitter",
+            "j-hui/fidget.nvim",
+            "ravitemer/mcphub.nvim",
+        },
+
+        lazy = false,
+
+        init = function()
+            require("plugins.codecompanion.fidget-spinner"):init()
+        end,
     },
 
     {
@@ -76,8 +72,78 @@ return {
         cmd = "Copilot",
         event = "InsertEnter",
         config = function()
-            require("copilot").setup({})
+            require("copilot").setup({
+                suggestion = {
+                    enabled = false,
+                },
+                panel = {
+                    enabled = false,
+                },
+                should_attach = function(_, _)
+                    return false
+                end,
+            })
         end,
+    },
+
+    {
+        "ravitemer/mcphub.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim", -- Required for Job and HTTP requests
+        },
+        -- comment the following line to ensure hub will be ready at the earliest
+        cmd = "MCPHub", -- lazy load by default
+        build = "npm install -g mcp-hub@latest", -- Installs required mcp-hub npm module
+        -- uncomment this if you don't want mcp-hub to be available globally or can't use -g
+        -- build = "bundled_build.lua",  -- Use this and set use_bundled_binary = true in opts  (see Advanced configuration)
+        config = function()
+            require("mcphub").setup()
+        end,
+    },
+
+    {
+        "hrsh7th/nvim-cmp",
+        opts = function(_, opts)
+            local types = require("cmp.types")
+            local compare = require("cmp.config.compare")
+            local function deprioritize_snippet(entry1, entry2)
+                if entry1:get_kind() == types.lsp.CompletionItemKind.Snippet then
+                    return false
+                end
+                if entry2:get_kind() == types.lsp.CompletionItemKind.Snippet then
+                    return true
+                end
+            end
+
+            opts.sorting = {
+                priority_weight = 2,
+                comparators = {
+                    deprioritize_snippet,
+                    compare.offset,
+                    compare.exact,
+                    -- compare.scopes,
+                    compare.score,
+                    compare.recently_used,
+                    compare.locality,
+                    compare.kind,
+                    compare.sort_text,
+                    compare.length,
+                    compare.order,
+                },
+            }
+        end,
+    },
+
+    {
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = {
+                "lazy.nvim",
+                "LazyVim",
+                "stevearc/conform.nvim",
+            },
+        },
     },
 
     {
