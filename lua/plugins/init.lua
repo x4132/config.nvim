@@ -102,6 +102,17 @@ return {
     },
 
     {
+        "folke/snacks.nvim",
+        priority = 1000,
+        lazy = false,
+        opts = {
+            bigfile = {},
+            image = {},
+            input = {}
+        }
+    },
+
+    {
         "hrsh7th/nvim-cmp",
         opts = function(_, opts)
             local types = require("cmp.types")
